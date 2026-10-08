@@ -1,0 +1,9 @@
+{
+  "name": "skilltwin-ai",
+  "version": "1.0.0",
+  "description": "SkillTwin AI – Your AI-Powered Digital Skill Twin",
+  "type": "module",
+  "scripts": {
+    "start": "python -m http.server 3000"
+  }
+}

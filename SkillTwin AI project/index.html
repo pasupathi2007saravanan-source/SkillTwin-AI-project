@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillTwin AI – Your AI-Powered Digital Skill Twin</title>
+  <meta name="description" content="SkillTwin AI is your intelligent student career twin. Analyzes skills, resume, coding performance, identifies gaps, calculates job readiness, and generates dynamic daily learning schedules.">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN for beautiful interactive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="header-glass">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-avatar-orb" id="brandOrb">
+          <img src="assets/skill_twin_avatar.jpg" alt="AI Skill Twin Avatar">
+        </div>
+        <div class="brand-title">
+          <h1>SkillTwin AI <span class="badge-ai">PRO</span></h1>
+          <div class="brand-tagline">Your AI-Powered Digital Skill Twin</div>
+        </div>
+      </div>
+
+      <!-- Live Status Strip -->
+      <div class="header-status-strip">
+        <div class="status-pill">
+          <span class="dot"></span>
+          <span id="headerRoleBadge">AI / ML Engineer</span>
+        </div>
+        <div class="status-pill" style="color: var(--accent-cyan);">
+          <span>Twin Readiness:</span>
+          <strong id="headerReadinessPct">64%</strong>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="header-actions">
+        <select id="profilePresetSelect" class="form-select" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; background: rgba(15, 23, 42, 0.9);">
+          <option value="pasupathi_aiml">👤 Pasupathi S (AI/ML)</option>
+          <option value="ananya_fullstack">👤 Ananya Roy (Full Stack)</option>
+        </select>
+        <button id="btnRecalculateTwin" class="btn btn-primary btn-sm" title="Re-sync SkillTwin with all recent data">
+          <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Sync Twin
+        </button>
+        <button id="btnOpenSettings" class="btn btn-secondary btn-sm" title="Configure AI Service or API Keys">
+          <i data-lucide="settings" style="width: 14px; height: 14px;"></i> AI Config
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs-wrapper">
+    <ul class="nav-tabs">
+      <li>
+        <button class="nav-tab-btn active" data-tab="tab-dashboard" id="tabBtnDashboard">
+          <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i> Twin Dashboard
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-profile" id="tabBtnProfile">
+          <i data-lucide="user-check" style="width: 16px; height: 16px;"></i> Student Profile & Resume
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-twin" id="tabBtnTwin">
+          <i data-lucide="dna" style="width: 16px; height: 16px;"></i> AI Skill Twin Matrix
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-recommendations" id="tabBtnRecs">
+          <i data-lucide="compass" style="width: 16px; height: 16px;"></i> AI Recommendations
+          <span class="badge-count" id="recsAlertCount">1 Urgent</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-schedule" id="tabBtnSchedule">
+          <i data-lucide="calendar-clock" style="width: 16px; height: 16px;"></i> AI Time Management
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-roles" id="tabBtnRoles">
+          <i data-lucide="target" style="width: 16px; height: 16px;"></i> Job Role Benchmarks
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- App Main Content Area -->
+  <main class="app-container">
+
+    <!-- WOW Feature Headline Banner -->
+    <section class="wow-feature-banner" id="wowBanner">
+      <div class="wow-content">
+        <div class="wow-icon-box">⚡</div>
+        <div>
+          <div class="wow-title-highlight">
+            <span class="quote">“SkillTwin does not only tell WHAT to learn. It also tells WHEN to learn it.”</span>
+          </div>
+          <div class="wow-desc">
+            Autonomous dynamic scheduling connects your cognitive energy & college hours with your biggest skill bottlenecks.
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <div class="wow-twin-avatar-box">
+          <div class="wow-twin-thumb">
+            <img src="assets/skill_twin_avatar.jpg" alt="AI Digital Twin Avatar">
+          </div>
+          <div class="wow-twin-info">
+            <span class="wow-twin-title">AI DIGITAL TWIN</span>
+            <span class="wow-twin-status"><span class="pulse-dot"></span> Neural Sync: 99.4%</span>
+          </div>
+        </div>
+        <div class="wow-badge">
+          <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i>
+          Smart Auto-Rescheduling Active
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         TAB 1: TWIN DASHBOARD
+         ========================================================================= -->
+    <section id="tab-dashboard" class="tab-pane active">
+      
+      <!-- Digital Twin Holographic Core Showcase Banner -->
+      <div class="twin-hologram-showcase">
+        <div class="twin-hologram-media">
+          <img src="assets/skill_twin_avatar.jpg" alt="AI Digital Skill Twin Hologram">
+          <div class="twin-hologram-tag">TWIN ID #2197</div>
+        </div>
+        <div class="twin-hologram-body">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <div>
+              <div style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;">
+                Active Neural Architecture
+              </div>
+              <h2 style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin: 0.15rem 0;">
+                Your AI Digital Skill Twin is Synchronized
+              </h2>
+            </div>
+            <span class="badge-status strong" style="font-size: 0.76rem; padding: 0.35rem 0.8rem;">
+              <span class="pulse-dot" style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-emerald); box-shadow: 0 0 8px var(--accent-emerald); margin-right: 4px;"></span>
+              Live Synapse Active
+            </span>
+          </div>
+          <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: 0.35rem; max-width: 820px; line-height: 1.5;">
+            Continuous digital representation mirroring your coding aptitude, project deliverables, and real-time skill gaps. Recalibrates dynamically on every code commit and completed study slot.
+          </p>
+          <div class="twin-telemetry-chips">
+            <span class="meta-chip highlight">⚡ 120+ Skill Nodes Indexed</span>
+            <span class="meta-chip">🧠 Dynamic Gap Detection: Active</span>
+            <span class="meta-chip">⏱️ Cognitive Energy Scheduling: Enabled</span>
+            <span class="meta-chip highlight" style="color: var(--accent-cyan);" id="twinHoloRoleChip">🎯 Benchmark: AI / ML Engineer</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Metric Cards Strip -->
+      <div class="stats-overview-grid">
+        <div class="stat-card">
+          <div class="stat-icon cyan"><i data-lucide="award"></i></div>
+          <div class="stat-data">
+            <span class="stat-label">Overall Readiness</span>
+            <span class="stat-value" id="statReadiness">64%</span>
+            <span class="stat-subtext" id="statReadinessSub">Target: 85% for Job Placement</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon emerald"><i data-lucide="zap"></i></div>
+          <div class="stat-data">
+            <span class="stat-label">Top Skill</span>
+            <span class="stat-value" id="statTopSkill">Python (82%)</span>
+            <span class="stat-subtext">Solid industry foundation ✅</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon rose"><i data-lucide="alert-triangle"></i></div>
+          <div class="stat-data">
+            <span class="stat-label">Biggest Skill Gap</span>
+            <span class="stat-value" id="statBiggestGap">DSA (38%)</span>
+            <span class="stat-subtext" id="statGapSub">Gap deficit: -32% from benchmark</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon indigo"><i data-lucide="compass"></i></div>
+          <div class="stat-data">
+            <span class="stat-label">Recommended Next</span>
+            <span class="stat-value" id="statNextSkill">Machine Learning</span>
+            <span class="stat-subtext">Regression & Validation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Main 2-Column Section -->
+      <div class="dashboard-main-split">
+        
+        <!-- Left: Job Readiness Breakdown & Skill Radar Chart -->
+        <div class="card-glass">
+          <div class="card-header-flex">
+            <div class="card-header-title">
+              <div class="icon-badge"><i data-lucide="radar"></i></div>
+              <h3>SkillTwin vs Role Benchmark Matrix</h3>
+            </div>
+            <span class="meta-chip highlight" id="radarTargetRoleLabel">AI/ML Engineer</span>
+          </div>
+
+          <div style="height: 290px; width: 100%; position: relative;">
+            <canvas id="skillRadarCanvas"></canvas>
+          </div>
+
+          <div class="readiness-gauge-box" style="margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+            <div class="gauge-canvas-wrap">
+              <canvas id="gaugeCanvas"></canvas>
+              <div class="gauge-center-text">
+                <div class="gauge-pct" id="gaugePctDisplay">64%</div>
+                <div class="gauge-label">Readiness</div>
+              </div>
+            </div>
+
+            <div class="readiness-breakdown-list">
+              <div class="breakdown-row">
+                <div class="breakdown-label-flex">
+                  <span>Core Skill Alignment</span>
+                  <strong id="barSkillMatchPct">62%</strong>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill cyan" id="barSkillMatchFill" style="width: 62%;"></div>
+                </div>
+              </div>
+
+              <div class="breakdown-row">
+                <div class="breakdown-label-flex">
+                  <span>Coding & Problem Solving</span>
+                  <strong id="barCodingMatchPct">71%</strong>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill emerald" id="barCodingMatchFill" style="width: 71%;"></div>
+                </div>
+              </div>
+
+              <div class="breakdown-row">
+                <div class="breakdown-label-flex">
+                  <span>Project Portfolio Depth</span>
+                  <strong id="barProjectMatchPct">65%</strong>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill indigo" id="barProjectMatchFill" style="width: 65%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Today's AI Schedule & Quick Status -->
+        <div class="card-glass">
+          <div class="card-header-flex">
+            <div class="card-header-title">
+              <div class="icon-badge"><i data-lucide="clock"></i></div>
+              <h3>Today's Prioritized Learning Schedule</h3>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btnDashScheduleGo">Full Schedule →</button>
+          </div>
+
+          <!-- Schedule quick list preview -->
+          <div id="dashSchedulePreview" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              Tasks: <strong id="dashCompletedTasksCount" style="color: var(--accent-emerald);">2 Done</strong> · 
+              <strong id="dashPendingTasksCount" style="color: var(--accent-rose);">3 Pending</strong>
+            </div>
+            <button class="btn btn-primary btn-sm" id="btnAutoRescheduleDash">
+              <i data-lucide="shuffle" style="width: 14px; height: 14px;"></i> Smart Reschedule
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Horizontal Gap Analysis Chart -->
+      <div class="card-glass">
+        <div class="card-header-flex">
+          <div class="card-header-title">
+            <div class="icon-badge"><i data-lucide="bar-chart-2"></i></div>
+            <h3>Skill Deficit Distribution (Current vs Gap Needed)</h3>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Red bar indicates target gap needed to close</span>
+        </div>
+        <div style="height: 220px; width: 100%;">
+          <canvas id="gapBarCanvas"></canvas>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================================
+         TAB 2: MODULE 1 – STUDENT PROFILE & RESUME
+         ========================================================================= -->
+    <section id="tab-profile" class="tab-pane" style="display: none;">
+      
+      <!-- Profile Hero Banner -->
+      <div class="profile-banner-card">
+        <div class="profile-avatar-large" id="profileBigAvatar">
+          <img src="assets/skill_twin_avatar.jpg" alt="Student Digital Twin Avatar">
+        </div>
+        <div class="profile-info-content">
+          <div class="profile-name">
+            <span id="profDisplayName">Pasupathi S</span>
+            <span class="badge-status strong" id="profTargetRoleChip">AI / ML Engineer</span>
+          </div>
+          <div class="profile-meta-chips">
+            <span class="meta-chip" id="profDept">Information Technology</span>
+            <span class="meta-chip" id="profYear">3rd Year B.Tech</span>
+            <span class="meta-chip highlight" id="profCollege">Engineering College</span>
+          </div>
+          <p id="profBio" style="font-size: 0.88rem; color: var(--text-muted); max-width: 800px;">
+            Passionate about intelligent systems, deep neural architectures, and scaling data-driven applications.
+          </p>
+        </div>
+        <div>
+          <button class="btn btn-primary" id="btnEditProfileOpen">
+            <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i> Edit Profile
+          </button>
+        </div>
+      </div>
+
+      <!-- 2 Column: Resume Extractor + Coding & GitHub Performance -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <!-- Resume Upload & Extraction Box -->
+        <div class="card-glass">
+          <div class="card-header-flex">
+            <div class="card-header-title">
+              <div class="icon-badge"><i data-lucide="file-text"></i></div>
+              <h3>Resume & Skill Extraction</h3>
+            </div>
+            <span class="badge-status strong" id="resumeStatusBadge">Parsed ✅</span>
+          </div>
+
+          <div class="resume-upload-zone" id="resumeDropzone">
+            <input type="file" id="resumeFileInput" accept=".pdf,.doc,.docx,.txt" style="display: none;">
+            <div class="upload-icon">📄</div>
+            <h4 style="font-size: 1rem; color: #ffffff; margin-bottom: 0.25rem;">Upload Student Resume</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.85rem;">
+              Drag & drop PDF, DOCX, or click to upload. SkillTwin will extract skills & project experience automatically.
+            </p>
+            <div style="display: flex; gap: 0.65rem; justify-content: center; flex-wrap: wrap;">
+              <button class="btn btn-primary btn-sm" id="btnBrowseResume">Browse File</button>
+              <button class="btn btn-secondary btn-sm" id="btnLoadSampleResume">Load Sample Resume</button>
+              <button class="btn btn-secondary btn-sm" id="btnPasteResume">Paste Raw Text</button>
+            </div>
+          </div>
+
+          <!-- Parsed summary preview -->
+          <div id="resumeSummaryBox" style="margin-top: 1.25rem; background: rgba(15, 23, 42, 0.7); border-radius: var(--radius-sm); padding: 1rem; border: 1px solid var(--border-subtle);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.82rem;">
+              <span style="color: var(--text-muted);"><i data-lucide="paperclip" style="width: 13px; height: 13px; vertical-align: middle;"></i> <span id="resumeFileNameText">Pasupathi_Resume_2026.pdf</span></span>
+              <span style="color: var(--accent-cyan); font-weight: 600;" id="resumeSkillCountText">9 skills indexed</span>
+            </div>
+            <p id="resumeSummaryContent" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;">
+              Parsed undergraduate profile with experience in Python, Machine Learning, Deep Neural Nets, and Relational SQL.
+            </p>
+          </div>
+        </div>
+
+        <!-- Coding Performance & GitHub -->
+        <div class="card-glass">
+          <div class="card-header-flex">
+            <div class="card-header-title">
+              <div class="icon-badge"><i data-lucide="code-2"></i></div>
+              <h3>Coding Performance & GitHub</h3>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btnUpdateCoding">Update Stats</button>
+          </div>
+
+          <!-- Coding metrics grid -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.25rem;">
+            <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); text-align: center;">
+              <div style="font-size: 0.75rem; color: var(--text-muted);">LeetCode Solved</div>
+              <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff;" id="codingTotalSolved">142</div>
+              <div style="font-size: 0.7rem; color: var(--accent-emerald);">Easy: 70 | Med: 62 | Hard: 10</div>
+            </div>
+            <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); text-align: center;">
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Contest Rating</div>
+              <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent-cyan);" id="codingRating">1520</div>
+              <div style="font-size: 0.7rem; color: var(--text-muted);">Top 18% Global</div>
+            </div>
+            <div style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); text-align: center;">
+              <div style="font-size: 0.75rem; color: var(--text-muted);">GitHub Repos</div>
+              <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent-indigo);" id="githubReposCount">16</div>
+              <div style="font-size: 0.7rem; color: var(--text-muted);">412 Commits / Year</div>
+            </div>
+          </div>
+
+          <!-- Projects List -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+              <h4 style="font-size: 0.9rem; font-weight: 700; color: #ffffff;">Key Featured Projects</h4>
+              <button class="btn btn-secondary btn-sm" id="btnAddProjectOpen" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">+ Add Project</button>
+            </div>
+            <div id="profileProjectsList" style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================================
+         TAB 3: MODULE 2 – AI SKILL TWIN
+         ========================================================================= -->
+    <section id="tab-twin" class="tab-pane" style="display: none;">
+      
+      <div class="card-glass" style="margin-bottom: 1.5rem;">
+        <div class="card-header-flex">
+          <div>
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-bottom: 0.2rem;">
+              🧬 AI Skill Twin Dashboard
+            </h2>
+            <p style="font-size: 0.84rem; color: var(--text-muted);">
+              Benchmarking your current capabilities directly against industry hiring requirements for <strong id="twinCurrentRoleName" style="color: var(--accent-cyan);">AI / ML Engineer</strong>.
+            </p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnAddSkillModalOpen">
+            <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> Add / Update Skill
+          </button>
+        </div>
+
+        <!-- Filter Pill Buttons -->
+        <div class="skill-category-pill-group">
+          <button class="pill-filter-btn active" data-filter="all">All Skills (<span id="countAllSkills">10</span>)</button>
+          <button class="pill-filter-btn" data-filter="strong">Strong Skills ✅ (<span id="countStrongSkills">3</span>)</button>
+          <button class="pill-filter-btn" data-filter="medium">Medium Skills ⚠️ (<span id="countMediumSkills">4</span>)</button>
+          <button class="pill-filter-btn" data-filter="missing">Missing Skills ❌ (<span id="countMissingSkills">3</span>)</button>
+        </div>
+
+        <!-- Skills Cards Grid -->
+        <div class="skills-twin-cards-grid" id="skillsTwinGrid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================================
+         TAB 4: MODULE 3 – AI RECOMMENDATIONS
+         ========================================================================= -->
+    <section id="tab-recommendations" class="tab-pane" style="display: none;">
+      
+      <!-- Hero Recommendation Spotlight -->
+      <div class="recommendations-hero-card" id="recsHeroBox">
+        <div class="rec-badge-strip">
+          <span class="priority-pill critical" id="recPriorityBadge">CRITICAL PRIORITY</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">AI Bottleneck Detection</span>
+        </div>
+
+        <div class="rec-target-skill">
+          Next Skill to Master: <span id="recTargetSkillName">Machine Learning</span>
+        </div>
+
+        <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 850px; margin-bottom: 1rem;">
+          Your SkillTwin has identified <strong id="recTargetSkillInline">Machine Learning (45%)</strong> as the highest-impact hurdle preventing you from crossing the 75% interview readiness threshold.
+        </p>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" id="btnRecAddToSchedule">
+            <i data-lucide="calendar-plus" style="width: 16px; height: 16px;"></i> Add to Today's Learning Schedule
+          </button>
+          <button class="btn btn-secondary" id="btnRecAskAI">
+            <i data-lucide="bot" style="width: 16px; height: 16px;"></i> Generate AI Deep-Dive Study Guide
+          </button>
+        </div>
+
+        <!-- 3-Block Grid: Topics, Practice Tasks, Priority Details -->
+        <div class="rec-grid-sections">
+          <div class="rec-block">
+            <h5><i data-lucide="book-open" style="width: 15px; height: 15px;"></i> Recommended Topics to Study</h5>
+            <ul class="rec-list" id="recTopicsList">
+              <!-- Rendered dynamically -->
+            </ul>
+          </div>
+
+          <div class="rec-block">
+            <h5><i data-lucide="terminal" style="width: 15px; height: 15px;"></i> Practice Tasks & Coding</h5>
+            <ul class="rec-list" id="recPracticeList">
+              <!-- Rendered dynamically -->
+            </ul>
+          </div>
+
+          <div class="rec-block">
+            <h5><i data-lucide="clock" style="width: 15px; height: 15px;"></i> Learning Priority & Velocity</h5>
+            <div style="font-size: 0.84rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div><strong>Suggested Priority:</strong> <span id="recPriorityText" style="color: var(--accent-rose);">High (Critical Gap)</span></div>
+              <div><strong>Estimated Study Hours:</strong> <span id="recEstHours">18 Hours</span></div>
+              <div><strong>Best Time Window:</strong> Post-College 5:00 PM - 6:15 PM</div>
+              <div><strong>Twin XP Gain:</strong> +8% upon milestone completion</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Project to Build -->
+        <div class="rec-project-card">
+          <div class="rec-project-title">
+            <span id="recProjectTitle">🚀 Recommended Project: Predictive Customer Churn & Lifetime Value Engine</span>
+            <span class="badge-status strong" style="font-size: 0.72rem;">Portfolio Builder</span>
+          </div>
+          <div class="rec-project-tech" id="recProjectTech">Tech Stack: Python, Scikit-Learn, FastAPI, Streamlit</div>
+          <p id="recProjectDesc" style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.45;">
+            End-to-end ML pipeline with data cleaning, feature engineering, automated model selection, and FastAPI inference endpoint.
+          </p>
+          <div style="margin-top: 0.85rem;">
+            <button class="btn btn-secondary btn-sm" id="btnEnrollProject">
+              <i data-lucide="folder-plus" style="width: 14px; height: 14px;"></i> Adopt as Active Portfolio Project
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- AI Deep Dive Modal / Output Container -->
+      <div id="aiDeepDiveContainer" class="card-glass" style="display: none; margin-top: 1.5rem; border-color: var(--border-glow);">
+        <div class="card-header-flex">
+          <div class="card-header-title">
+            <div class="icon-badge"><i data-lucide="sparkles"></i></div>
+            <h3>AI Deep-Dive Career Advisor Synthesis</h3>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btnCloseAIDeepDive">Dismiss</button>
+        </div>
+        <div id="aiDeepDiveText" style="font-size: 0.88rem; line-height: 1.6; color: #e2e8f0; white-space: pre-line;"></div>
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================================
+         TAB 5: MODULE 4 – AI TIME MANAGEMENT & PERSONALIZED SCHEDULE
+         ========================================================================= -->
+    <section id="tab-schedule" class="tab-pane" style="display: none;">
+      
+      <div class="card-glass" style="margin-bottom: 1.5rem;">
+        <div class="schedule-controls-strip">
+          <div>
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-bottom: 0.2rem;">
+              ⏱️ AI Personalized Daily Schedule
+            </h2>
+            <p style="font-size: 0.84rem; color: var(--text-muted);">
+              Automated timetable built around your college hours, prioritizing your top skill gaps and energy peaks.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+            <button class="btn btn-secondary btn-sm" id="btnOpenScheduleConfig">
+              <i data-lucide="sliders" style="width: 14px; height: 14px;"></i> College & Time Settings
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnRegenerateSchedule">
+              <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i> Re-Optimize with AI
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule summary banner -->
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.82rem;">
+            <div>🏫 College Hours: <strong id="schedCollegeHoursLabel" style="color: #ffffff;">9:00 AM – 4:00 PM</strong></div>
+            <div>⚡ Daily Target: <strong style="color: var(--accent-cyan);">3.5 Hours Focused Study</strong></div>
+            <div>🎯 Primary Focus: <strong id="schedFocusSkillLabel" style="color: var(--accent-rose);">DSA & Algorithms</strong></div>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">
+            Checked off items continuously boost your SkillTwin scores live!
+          </div>
+        </div>
+
+        <!-- Timeline Container -->
+        <div class="timeline-container" id="scheduleTimelineList">
+          <!-- Rendered dynamically -->
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================================
+         TAB 6: JOB ROLE BENCHMARKS EXPLORER
+         ========================================================================= -->
+    <section id="tab-roles" class="tab-pane" style="display: none;">
+      
+      <div class="card-glass" style="margin-bottom: 1.5rem;">
+        <div class="card-header-flex">
+          <div>
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-bottom: 0.2rem;">
+              🎯 Target Job Role Benchmarks
+            </h2>
+            <p style="font-size: 0.84rem; color: var(--text-muted);">
+              Switch target roles to immediately re-calculate your SkillTwin readiness and re-align your daily schedule.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;" id="jobRolesGrid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================================================================
+       MODALS
+       ========================================================================= -->
+
+  <!-- Modal: Edit Profile -->
+  <div class="modal-overlay" id="modalEditProfile">
+    <div class="modal-box">
+      <div class="card-header-flex">
+        <h3 style="color: #ffffff; font-size: 1.15rem;">Edit Student Profile</h3>
+        <button class="btn btn-secondary btn-sm" data-close-modal="modalEditProfile">✕</button>
+      </div>
+      <form id="formEditProfile">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="inpEditName" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <input type="text" class="form-input" id="inpEditDept" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Year of Study</label>
+            <input type="text" class="form-input" id="inpEditYear" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target Job Role</label>
+          <select class="form-select" id="inpEditTargetRole">
+            <option value="aiml_engineer">AI / Machine Learning Engineer</option>
+            <option value="fullstack_dev">Full Stack Web Developer</option>
+            <option value="data_scientist">Data Scientist & Analytics Specialist</option>
+            <option value="cloud_devops">Cloud & DevOps Engineer</option>
+            <option value="cybersecurity_analyst">Cybersecurity & AppSec Analyst</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Professional Bio / Career Goal</label>
+          <textarea class="form-textarea" rows="3" id="inpEditBio"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalEditProfile">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Paste Resume Text -->
+  <div class="modal-overlay" id="modalPasteResume">
+    <div class="modal-box">
+      <div class="card-header-flex">
+        <h3 style="color: #ffffff; font-size: 1.15rem;">Paste Resume Text for AI Extraction</h3>
+        <button class="btn btn-secondary btn-sm" data-close-modal="modalPasteResume">✕</button>
+      </div>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Paste text from your resume or LinkedIn profile. The AI skill extractor will map mentions against industry benchmarks.
+      </p>
+      <form id="formPasteResume">
+        <div class="form-group">
+          <textarea class="form-textarea" rows="8" id="txtPasteResumeContent" placeholder="Paste resume sections (Skills, Projects, Education, Experience)..." required></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalPasteResume">Cancel</button>
+          <button type="submit" class="btn btn-primary">Extract Skills with AI</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add / Update Skill -->
+  <div class="modal-overlay" id="modalAddSkill">
+    <div class="modal-box">
+      <div class="card-header-flex">
+        <h3 style="color: #ffffff; font-size: 1.15rem;">Add / Update Skill Proficiency</h3>
+        <button class="btn btn-secondary btn-sm" data-close-modal="modalAddSkill">✕</button>
+      </div>
+      <form id="formAddSkill">
+        <div class="form-group">
+          <label class="form-label">Skill Name</label>
+          <input type="text" class="form-input" id="inpSkillName" list="skillDatalist" placeholder="e.g. Python, Machine Learning, DSA..." required>
+          <datalist id="skillDatalist">
+            <option value="Python">
+            <option value="Machine Learning">
+            <option value="DSA & Algorithms">
+            <option value="Deep Learning">
+            <option value="PyTorch / TensorFlow">
+            <option value="SQL & Database">
+            <option value="JavaScript / TypeScript">
+            <option value="React / Next.js">
+            <option value="System Design">
+            <option value="Docker & DevOps Basics">
+          </datalist>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current Proficiency Level: <span id="lblSkillRangeVal" style="color: var(--accent-cyan); font-weight: 700;">60%</span></label>
+          <input type="range" min="5" max="98" value="60" class="form-input" id="inpSkillLevel" style="padding: 0;">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalAddSkill">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update SkillTwin</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Coding Performance & LeetCode -->
+  <div class="modal-overlay" id="modalCodingStats">
+    <div class="modal-box">
+      <div class="card-header-flex">
+        <h3 style="color: #ffffff; font-size: 1.15rem;">Update Coding & GitHub Stats</h3>
+        <button class="btn btn-secondary btn-sm" data-close-modal="modalCodingStats">✕</button>
+      </div>
+      <form id="formCodingStats">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Total Problems Solved</label>
+            <input type="number" class="form-input" id="inpCodingTotal" min="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contest Rating</label>
+            <input type="number" class="form-input" id="inpCodingRating" min="800" max="3200" required>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label">Easy Solved</label>
+            <input type="number" class="form-input" id="inpCodingEasy" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Medium Solved</label>
+            <input type="number" class="form-input" id="inpCodingMedium" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hard Solved</label>
+            <input type="number" class="form-input" id="inpCodingHard" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">GitHub Repositories Count</label>
+          <input type="number" class="form-input" id="inpGithubRepos" min="0">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalCodingStats">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save & Recalculate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Schedule & College Timing Configuration -->
+  <div class="modal-overlay" id="modalScheduleConfig">
+    <div class="modal-box">
+      <div class="card-header-flex">
+        <h3 style="color: #ffffff; font-size: 1.15rem;">College Hours & Free Time Configuration</h3>
+        <button class="btn btn-secondary btn-sm" data-close-modal="modalScheduleConfig">✕</button>
+      </div>
+      <form id="formScheduleConfig">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">College Start Time</label>
+            <input type="time" class="form-input" id="inpCollegeStart" value="09:00" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">College End Time</label>
+            <input type="time" class="form-input" id="inpCollegeEnd" value="16:00" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Daily Target Self-Study Hours</label>
+          <input type="number" step="0.5" min="1" max="8" class="form-input" id="inpTargetHours" value="3.5" required>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalScheduleConfig">Cancel</button>
+          <button type="submit" class="btn btn-primary">Apply & Reschedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Featured Project -->
+  <div class="modal-overlay" id="modalAddProject">
+    <div class="modal-box">
+      <div class="card-header-flex">
+        <h3 style="color: #ffffff; font-size: 1.15rem;">Add Featured Portfolio Project</h3>
+        <button class="btn btn-secondary btn-sm" data-close-modal="modalAddProject">✕</button>
+      </div>
+      <form id="formAddProject">
+        <div class="form-group">
+          <label class="form-label">Project Name</label>
+          <input type="text" class="form-input" id="inpProjName" placeholder="e.g. Distributed Cache Engine" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tech Stack (comma separated)</label>
+          <input type="text" class="form-input" id="inpProjTech" placeholder="e.g. Python, Docker, Redis" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Complexity Level</label>
+          <select class="form-select" id="inpProjLevel">
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate" selected>Intermediate</option>
+            <option value="Advanced">Advanced Production-Grade</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalAddProject">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Project (+Skill XP)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: AI Engine Settings -->
+  <div class="modal-overlay" id="modalAISettings">
+    <div class="modal-box">
+      <div class="card-header-flex">
+        <h3 style="color: #ffffff; font-size: 1.15rem;">AI Service & Model Settings</h3>
+        <button class="btn btn-secondary btn-sm" data-close-modal="modalAISettings">✕</button>
+      </div>
+      <form id="formAISettings">
+        <div class="form-group">
+          <label class="form-label">AI Engine Provider</label>
+          <select class="form-select" id="inpAIProvider">
+            <option value="builtin">Built-in Neural Heuristics Engine (Offline, Zero Key Needed)</option>
+            <option value="gemini">Google Gemini API (Live Real-Time LLM)</option>
+          </select>
+        </div>
+        <div class="form-group" id="grpApiKey">
+          <label class="form-label">Gemini API Key (Optional)</label>
+          <input type="password" class="form-input" id="inpAIApiKey" placeholder="AIzaSy...">
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+            If left blank, SkillTwin seamlessly executes high-fidelity built-in analytical inference.
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary" data-close-modal="modalAISettings">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Settings</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Live Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Logic Modules -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
